@@ -2,7 +2,7 @@
 import mailbox
 import subprocess
 
-###############################
+#####################################################################
 # Prompts user to choose which search to do
 #   return: number of input choice (between x-x)
 def getChoice():
@@ -36,61 +36,61 @@ def getChoice():
     return choice
 
 
-###############################
+#####################################################################
 # Searches through mbox for emails containing a certain keword
-def keywordSearch():
+def keywordSearch(path, outfile):
     print("")
     searchTerm = input("  Please enter a search term:")
-            for message in mailbox.mbox(mboxfile):
-                print (message['subject'])
-                if searchTerm in str(message):
-                    print (message)
-                    writeFile.write(str(message))
+    for message in mailbox.mbox(path):
+        print (message['subject'])
+        if searchTerm in str(message):
+            print (message)
+            outFile.write(str(message))
 
 
-###############################
+#####################################################################
 # Searches through mbox for emails sent by a certain person
-def senderSearch():
+def senderSearch(path, outfile):
     print("")
-    searchTerm = input("  Pleae enter name of person who sent the emails:")
-            for message in mailbox.mbox(mboxfile):
-                print (message['subject'])
-                if searchTerm in str(message['From']):
-                    print (message)
-                    writeFile.write(str(message))
-                ###############################
-                # For getting the sender(s) of an email (or 'message' in above for loop)
-                #   sender = email['from']
+    searchTerm = raw_input("Please enter name of sender:  ")
+    print("Searching for emails from " + searchTerm + "...")
+    for email in mailbox.mbox(path):
+        if searchTerm in str(email['From']):
+            body = getBodyFromEmail(email)
+            outfile.write(body)
+            print(body) 
+            print("___________________________________________________________")
+            print("")
 
 
-###############################
+#####################################################################
 # Searches through mbox for emails recieved by a certain person
-def recipiantSearch():
+def recipiantSearch(path, outfile):
     print("")
-    searchTerm = input("  Pleae enter name of person who recieved the emails:")
-            for message in mailbox.mbox(mboxfile):
-                print (message['subject'])
-                if searchTerm in str(message['To']):
-                    print (message)
-                    writeFile.write(str(message))
+    searchTerm = input("  Pleae enter name of recipient:")
+    for message in mailbox.mbox(path):
+        print (message['subject'])
+        if searchTerm in str(message['To']):
+            print (message)
+            outFile.write(str(message))
                 ###############################
                 # For getting the recipient(s) of an email
                 #   recip = email['to']
 
 
-###############################
+#####################################################################
 # Searches through mbox for emails between two people
-def conversationSearch():
+def conversationSearch(path, outfile):
     print("  not built yet")
 
 
-###############################
+#####################################################################
 # Searches through mbox for emails during a certain month
-def dateSearch():
+def dateSearch(path, outfile):
     print("  not built yet")
 
 
-###############################
+#####################################################################
 # Prompts user to do another search or cease
 #   return: 1 if yes, 0 if no, -1 if something broke 
 def continueLoop():
@@ -114,25 +114,76 @@ def continueLoop():
 
     return out
 
-###############################
+
+#####################################################################
+# Gets body of an email (edited this method from a stack overflow example)
+#   return: body of email that is in mbox form
+def getBodyFromEmail(msg):
+    body = None
+    #Walk through the parts of the email to find the text body.    
+    if msg.is_multipart():    
+        for part in msg.walk():
+
+            # If part is multipart, walk through the subparts.            
+            if part.is_multipart(): 
+
+                for subpart in part.walk():
+                    if subpart.get_content_type() == 'text/plain':
+                        # Get the subpart payload (i.e the message body)
+                        body = subpart.get_payload(decode=True) 
+                        #charset = subpart.get_charset()
+
+            # Part isn't multipart so get the email body
+            elif part.get_content_type() == 'text/plain':
+                body = part.get_payload(decode=True)
+                #charset = part.get_charset()
+
+    # If this isn't a multi-part message then get the payload (i.e the message body)
+    elif msg.get_content_type() == 'text/plain':
+        body = msg.get_payload(decode=True) 
+
+   # No checking done to match the charset with the correct part. 
+    for charset in getCharSets(msg):
+        try:
+            body = body.decode(charset)
+        except UnicodeDecodeError:
+            print("Unicode Decode Error...")
+        except AttributeError:
+             print("Attribute Error...")
+    return body
+
+
+#####################################################################
+# Gets the set of characters in the message (in case wierd ones)
+#   return: list of characters in message
+def getCharSets(msg):
+    charsets = set({})
+    for c in msg.get_charsets():
+        if c is not None:
+            charsets.update([c])
+    return charsets
+
+
+#####################################################################
 # Main method that runs everything! :D
 def main():
     mboxfile = "C:\Python27\Enron\Inbox"
     print("Welcome to your friendly neighborhood mbox-mail-file-to-KODA-output program!")
 
+    count = 1
     while True:
-        writeFile = open('tempKODAfile.txt', 'w')
+        writeFile = open('tempKODAfile'+str(count)+'.txt', 'w')
         userChoice = getChoice()
         if (userChoice == 1):
-            keywordSearch()
+            keywordSearch(mboxfile, writeFile)
         elif (userChoice == 2):
-            senderSearch()
+            senderSearch(mboxfile, writeFile)
         elif (userChoice == 3):
-            recipiantSearch()
+            recipiantSearch(mboxfile, writeFile)
         elif (userChoice == 4):
-            conversationSearch()
+            conversationSearch(mboxfile, writeFile)
         elif (userChoice == 5):
-            dateSearch
+            dateSearch(mboxfile, writeFile)
 
         writeFile.close()
         num = continueLoop()
@@ -140,6 +191,7 @@ def main():
             print("")
             print("Starting another search...")
             print("_________________________________________________________")
+            count = count + 1
             continue
         else:
             print("")
@@ -164,5 +216,6 @@ main()
 
 ###############################
 # To loop through files in a directory
-#	for filename in os.listdir (folder):    
+#    for filename in os.listdir (folder):    
 #	(where 'folder' is the path to the folder you want to loop through)
+
