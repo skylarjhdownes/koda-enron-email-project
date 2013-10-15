@@ -2,7 +2,6 @@
 import mailbox
 import subprocess
 import argparse
-import os
 
 #####################################################################
 # Prompts user to choose which search to do
@@ -50,7 +49,7 @@ def keywordSearch(path, outfile):
         if searchTerm in str(message):
             count = count + 1
             print (message)
-            outFile.write(str(message))
+            outfile.write(str(message))
 
 
 #####################################################################
@@ -207,7 +206,7 @@ def getCharSets(msg):
 # Runs parsedoc.exe on the current temp file, in theory.   
 # Still needs to be tested on a working parsedoc.exe, and
 # will need something built to put the output into a text file.
-def runKODAOnCurrentFile():
+def runKODAOnCurrentFile(count):
     print('Running KODA on tempKODAfile' + str(count) + '.txt')
     subprocess.call('parsedoc.exe tempKODAfile' + str(count) + '.txt 5')
 
@@ -220,9 +219,9 @@ def main():
     parser.add_argument('-i', '--input', help='take the filepath of an mbox file as input.')
     args = parser.parse_args()
     if(args.input):
-        mboxfile = "args.input"
+        mboxfile = args.input
     else:
-        mboxfile = "C:\Python27\Enron\Inbox"
+        mboxfile = "F:\Documents and Settings\skylar.downes\Application Data\Thunderbird\Profiles\lwac8qob.default\Mail\Local Folders\Outlook Express Import.sbd\Inbox"  #"C:\Python27\Enron\Inbox"
     
     print("Welcome to your friendly neighborhood mbox-mail-file-to-KODA-output program!")
 
@@ -242,7 +241,7 @@ def main():
             dateSearch(mboxfile, writeFile)
 
         writeFile.close()
-        runKODAOnCurrentFile()
+#        runKODAOnCurrentFile(count)
         num = continueLoop()
         if(num == 1):
             print("")
@@ -267,8 +266,9 @@ main()
 ###############################
 # For getting the date of an email
 #   date = email['date']
-def getMailDate():
-    #return str(email['Date'])?
+
+#def getMailDate():
+#    return str(email['Date'])?
 
 ###############################
 # To loop through files in a directory
