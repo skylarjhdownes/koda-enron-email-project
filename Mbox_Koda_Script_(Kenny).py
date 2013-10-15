@@ -1,6 +1,8 @@
 #!/usr/bin/python
 import mailbox
 import subprocess
+import argparse
+import os
 
 #####################################################################
 # Prompts user to choose which search to do
@@ -19,7 +21,7 @@ def getChoice():
     
     while True:
         try:
-            choice = int(raw_input("Enter a number between 1 and 5: "))
+            choice = int(input("Enter a number between 1 and 5: "))
         except ValueError:
             print("  Invalid Input:")
             print("  Please enter a whole number.")
@@ -56,7 +58,7 @@ def keywordSearch(path, outfile):
 def senderSearch(path, outfile):
     count = 0
     print("")
-    searchTerm = raw_input("  Please enter name of sender:  ")
+    searchTerm = input("  Please enter name of sender:  ")
     print("  Searching for emails from " + searchTerm + "...")
     for email in mailbox.mbox(path):
         if searchTerm in str(email['From']):
@@ -75,7 +77,7 @@ def senderSearch(path, outfile):
 def recipiantSearch(path, outfile):
     count = 0
     print("")
-    searchTerm = raw_input("  Please enter name of recipient:  ")
+    searchTerm = input("  Please enter name of recipient:  ")
     print("  Searching for emails to " + searchTerm + "...")
     for email in mailbox.mbox(path):
         if searchTerm in str(email['To']):
@@ -94,8 +96,8 @@ def recipiantSearch(path, outfile):
 def conversationSearch(path, outfile):
     count = 0
     print("")
-    searchTerm1 = raw_input("  Please enter name of person 1:  ")
-    searchTerm2 = raw_input("  Please enter name of person 2:  ")
+    searchTerm1 = input("  Please enter name of person 1:  ")
+    searchTerm2 = input("  Please enter name of person 2:  ")
     print(" Searching for emails between " + searchTerm + " and " + searchTerm2 + "...")
     for email in mailbox.mbox(path):
         if searchTerm1 in str(email['From']) and searchTerm2 in str(email['To']):
@@ -117,7 +119,7 @@ def conversationSearch(path, outfile):
 # Searches through mbox for emails during a certain month
 def dateSearch(path, outfile):
     print("")
-    searchTerm = raw_input("  Please enter date in form of 'Mon, 7 Jan 2002':  ")
+    searchTerm = input("  Please enter date in form of 'Mon, 7 Jan 2002':  ")
     print("  Searching for emails sent on " + searchTerm + "...")
     for email in mailbox.mbox(path):
         if searchTerm in str(email['Date']):
@@ -138,7 +140,7 @@ def continueLoop():
     
     while True:
         try:
-            choice = raw_input("(Y/N): ").lower()
+            choice = input("(Y/N): ").lower()
             if(choice == "y" or choice == "yes"):
                 out = 1
             elif(choice == "n" or choice == "n"):
@@ -201,11 +203,27 @@ def getCharSets(msg):
             charsets.update([c])
     return charsets
 
+#####################################################################
+# Runs parsedoc.exe on the current temp file, in theory.   
+# Still needs to be tested on a working parsedoc.exe, and
+# will need something built to put the output into a text file.
+def runKODAOnCurrentFile():
+    print('Running KODA on tempKODAfile' + str(count) + '.txt')
+    subprocess.call('parsedoc.exe tempKODAfile' + str(count) + '.txt 5')
+
 
 #####################################################################
 # Main method that runs everything! :D
 def main():
-    mboxfile = "C:\Python27\Enron\Inbox"
+
+    parser = argparse.ArgumentParser(description="File input")
+    parser.add_argument('-i', '--input', help='take the filepath of an mbox file as input.')
+    args = parser.parse_args()
+    if(args.input):
+        mboxfile = "args.input"
+    else:
+        mboxfile = "C:\Python27\Enron\Inbox"
+    
     print("Welcome to your friendly neighborhood mbox-mail-file-to-KODA-output program!")
 
     count = 1
@@ -224,6 +242,7 @@ def main():
             dateSearch(mboxfile, writeFile)
 
         writeFile.close()
+        runKODAOnCurrentFile()
         num = continueLoop()
         if(num == 1):
             print("")
@@ -236,10 +255,6 @@ def main():
             print("So long, and thanks for all the fish!")
             break
 
-        
-
-# Need to build something to call tempKODAfile.txt here
-
 #####################################################################
 # run the program
 main()
@@ -248,11 +263,14 @@ main()
 # For getting the 'subject' of an email
 #   subject = email['subject']
 
+
 ###############################
 # For getting the date of an email
 #   date = email['date']
+def getMailDate():
+    #return str(email['Date'])?
 
 ###############################
 # To loop through files in a directory
 #    for filename in os.listdir (folder):    
-#	(where 'folder' is the path to the folder you want to loop through)
+#    (where 'folder' is the path to the folder you want to loop through)
