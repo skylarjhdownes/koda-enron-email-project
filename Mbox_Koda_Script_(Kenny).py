@@ -9,7 +9,7 @@ def getChoice():
     print("")
     print("Please choose an option from the list below:")
     print("  1) Run KODA on emails which contain a specific keyword")
-    print("  2) Run KODA on emails written by a certain person")
+    print("  2) Run KODA on emails written from a certain person")
     print("  3) Run KODA on emails written to a certain person")
     print("  4) Run KODA on emails sent between two people")
     print("  5) Run KODA on emails during a specific month")
@@ -32,18 +32,21 @@ def getChoice():
             continue
         else:
             break
-
+        
+    print("___________________________________________________________")
     return choice
 
 
 #####################################################################
 # Searches through mbox for emails containing a certain keword
 def keywordSearch(path, outfile):
+    count = 0
     print("")
     searchTerm = input("  Please enter a search term:")
     for message in mailbox.mbox(path):
         print (message['subject'])
         if searchTerm in str(message):
+            count = count + 1
             print (message)
             outFile.write(str(message))
 
@@ -51,43 +54,78 @@ def keywordSearch(path, outfile):
 #####################################################################
 # Searches through mbox for emails sent by a certain person
 def senderSearch(path, outfile):
+    count = 0
     print("")
-    searchTerm = raw_input("Please enter name of sender:  ")
-    print("Searching for emails from " + searchTerm + "...")
+    searchTerm = raw_input("  Please enter name of sender:  ")
+    print("  Searching for emails from " + searchTerm + "...")
     for email in mailbox.mbox(path):
         if searchTerm in str(email['From']):
+            count = count + 1
             body = getBodyFromEmail(email)
             outfile.write(body)
             print(body) 
             print("___________________________________________________________")
             print("")
 
+    print("There were " + str(count) + " emails sent by " + searchTerm + ".")
+
 
 #####################################################################
 # Searches through mbox for emails recieved by a certain person
 def recipiantSearch(path, outfile):
+    count = 0
     print("")
-    searchTerm = input("  Pleae enter name of recipient:")
-    for message in mailbox.mbox(path):
-        print (message['subject'])
-        if searchTerm in str(message['To']):
-            print (message)
-            outFile.write(str(message))
-                ###############################
-                # For getting the recipient(s) of an email
-                #   recip = email['to']
+    searchTerm = raw_input("  Please enter name of recipient:  ")
+    print("  Searching for emails to " + searchTerm + "...")
+    for email in mailbox.mbox(path):
+        if searchTerm in str(email['To']):
+            count = count + 1
+            body = getBodyFromEmail(email)
+            outfile.write(body)
+            print(body) 
+            print("___________________________________________________________")
+            print("")
+
+    print("There were " + str(count) + " emails recieved by " + searchTerm + ".")
 
 
 #####################################################################
 # Searches through mbox for emails between two people
 def conversationSearch(path, outfile):
-    print("  not built yet")
-
+    count = 0
+    print("")
+    searchTerm1 = raw_input("  Please enter name of person 1:  ")
+    searchTerm2 = raw_input("  Please enter name of person 2:  ")
+    print(" Searching for emails between " + searchTerm + " and " + searchTerm2 + "...")
+    for email in mailbox.mbox(path):
+        if searchTerm1 in str(email['From']) and searchTerm2 in str(email['To']):
+            count = count + 1
+            body = getBodyFromEmail(email)
+            outfile.write(body)
+            print(body) 
+            print("___________________________________________________________")
+            print("")
+        elif searchTerm1 in str(email['To']) and searchTerm2 in str(email['From']):
+            count = count + 1
+            body = getBodyFromEmail(email)
+            outfile.write(body)
+            print(body) 
+            print("___________________________________________________________")
+            print("")
 
 #####################################################################
 # Searches through mbox for emails during a certain month
 def dateSearch(path, outfile):
-    print("  not built yet")
+    print("")
+    searchTerm = raw_input("  Please enter date in form of 'Mon, 7 Jan 2002':  ")
+    print("  Searching for emails sent on " + searchTerm + "...")
+    for email in mailbox.mbox(path):
+        if searchTerm in str(email['Date']):
+            body = getBodyFromEmail(email)
+            outfile.write(body)
+            print(body) 
+            print("___________________________________________________________")
+            print("")
 
 
 #####################################################################
@@ -218,4 +256,3 @@ main()
 # To loop through files in a directory
 #    for filename in os.listdir (folder):    
 #	(where 'folder' is the path to the folder you want to loop through)
-
