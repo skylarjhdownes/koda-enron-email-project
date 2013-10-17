@@ -20,7 +20,7 @@ def getChoice():
     
     while True:
         try:
-            choice = int(input("Enter a number between 1 and 5: "))
+            choice = int(raw_input("Enter a number between 1 and 5: "))
         except ValueError:
             print("  Invalid Input:")
             print("  Please enter a whole number.")
@@ -43,7 +43,7 @@ def getChoice():
 def keywordSearch(path, outfile):
     count = 0
     print("")
-    searchTerm = input("  Please enter a search term:")
+    searchTerm = raw_input("  Please enter a search term:")
     for message in mailbox.mbox(path):
         print (message['subject'])
         if searchTerm in str(message):
@@ -57,13 +57,13 @@ def keywordSearch(path, outfile):
 def senderSearch(path, outfile):
     count = 0
     print("")
-    searchTerm = input("  Please enter name of sender:  ")
+    searchTerm = raw_input("  Please enter name of sender:  ")
     print("  Searching for emails from " + searchTerm + "...")
     for email in mailbox.mbox(path):
         if searchTerm in str(email['From']):
             count = count + 1
             body = getBodyFromEmail(email)
-            outfile.write(body)
+            outfile.write(str(body))
             print(body) 
             print("___________________________________________________________")
             print("")
@@ -76,13 +76,13 @@ def senderSearch(path, outfile):
 def recipiantSearch(path, outfile):
     count = 0
     print("")
-    searchTerm = input("  Please enter name of recipient:  ")
+    searchTerm = raw_input("  Please enter name of recipient:  ")
     print("  Searching for emails to " + searchTerm + "...")
     for email in mailbox.mbox(path):
         if searchTerm in str(email['To']):
             count = count + 1
             body = getBodyFromEmail(email)
-            outfile.write(body)
+            outfile.write(str(body))
             print(body) 
             print("___________________________________________________________")
             print("")
@@ -95,21 +95,21 @@ def recipiantSearch(path, outfile):
 def conversationSearch(path, outfile):
     count = 0
     print("")
-    searchTerm1 = input("  Please enter name of person 1:  ")
-    searchTerm2 = input("  Please enter name of person 2:  ")
+    searchTerm1 = raw_input("  Please enter name of person 1:  ")
+    searchTerm2 = raw_input("  Please enter name of person 2:  ")
     print(" Searching for emails between " + searchTerm + " and " + searchTerm2 + "...")
     for email in mailbox.mbox(path):
         if searchTerm1 in str(email['From']) and searchTerm2 in str(email['To']):
             count = count + 1
             body = getBodyFromEmail(email)
-            outfile.write(body)
+            outfile.write(str(body))
             print(body) 
             print("___________________________________________________________")
             print("")
         elif searchTerm1 in str(email['To']) and searchTerm2 in str(email['From']):
             count = count + 1
             body = getBodyFromEmail(email)
-            outfile.write(body)
+            outfile.write(str(body))
             print(body) 
             print("___________________________________________________________")
             print("")
@@ -118,12 +118,12 @@ def conversationSearch(path, outfile):
 # Searches through mbox for emails during a certain month
 def dateSearch(path, outfile):
     print("")
-    searchTerm = input("  Please enter date in form of 'Mon, 7 Jan 2002':  ")
+    searchTerm = raw_input("  Please enter date in form of 'Mon, 7 Jan 2002':  ")
     print("  Searching for emails sent on " + searchTerm + "...")
     for email in mailbox.mbox(path):
         if searchTerm in str(email['Date']):
             body = getBodyFromEmail(email)
-            outfile.write(body)
+            outfile.write(str(body))
             print(body) 
             print("___________________________________________________________")
             print("")
@@ -139,7 +139,7 @@ def continueLoop():
     
     while True:
         try:
-            choice = input("(Y/N): ").lower()
+            choice = raw_input("(Y/N): ").lower()
             if(choice == "y" or choice == "yes"):
                 out = 1
             elif(choice == "n" or choice == "n"):
@@ -208,7 +208,11 @@ def getCharSets(msg):
 # will need something built to put the output into a text file.
 def runKODAOnCurrentFile(count):
     print('Running KODA on tempKODAfile' + str(count) + '.txt')
-    subprocess.call('parsedoc.exe tempKODAfile' + str(count) + '.txt 5')
+    kodaOutput = subprocess.check_output(['./parsedoc', 'tempKODAfile' + str(count) + '.txt', '5'])
+    writeFile = open('KODAoutputfile'+str(count)+'.txt', 'w')
+    writeFile.write(str(kodaOutput))
+    writeFile.close()
+
 
 
 #####################################################################
@@ -239,10 +243,9 @@ def main():
             conversationSearch(mboxfile, writeFile)
         elif (userChoice == 5):
             dateSearch(mboxfile, writeFile)
-
         writeFile.close()
-#        runKODAOnCurrentFile(count)
-        num = continueLoop()
+    runKODAOnCurrentFile(count)
+	num = continueLoop()
         if(num == 1):
             print("")
             print("Starting another search...")
@@ -273,4 +276,4 @@ main()
 ###############################
 # To loop through files in a directory
 #    for filename in os.listdir (folder):    
-#    (where 'folder' is the path to the folder you want to loop through)
+#	(where 'folder' is the path to the folder you want to loop through)
