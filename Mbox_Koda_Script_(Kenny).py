@@ -263,17 +263,18 @@ main()
 
 ###############################
 # For getting the 'subject' of an email
-#   subject = email['subject']
+#   
+def getSubject(email):
+    subject = email['subject']
 
 
 ###############################
 # For getting the date of an email
 #   date = email['date']
-
-#def getMailDate():
-#    return str(email['Date'])?
+def getMailDate(email):
+    return str(email['Date'])
 
 ###############################
 # To loop through files in a directory
 #    for filename in os.listdir (folder):    
-#	(where 'folder' is the path to the folder you want to loop through)
+#    (where 'folder' is the path to the folder you want to loop through)
