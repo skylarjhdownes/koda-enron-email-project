@@ -244,8 +244,8 @@ def main():
         elif (userChoice == 5):
             dateSearch(mboxfile, writeFile)
         writeFile.close()
-    runKODAOnCurrentFile(count)
-	num = continueLoop()
+        runKODAOnCurrentFile(count)
+	    num = continueLoop()
         if(num == 1):
             print("")
             print("Starting another search...")
