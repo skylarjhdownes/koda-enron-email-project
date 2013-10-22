@@ -245,7 +245,7 @@ def main():
             dateSearch(mboxfile, writeFile)
         writeFile.close()
         runKODAOnCurrentFile(count)
-	    num = continueLoop()
+        num = continueLoop()
         if(num == 1):
             print("")
             print("Starting another search...")
