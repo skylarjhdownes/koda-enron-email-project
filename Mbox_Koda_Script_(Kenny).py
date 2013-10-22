@@ -13,7 +13,7 @@ def getChoice():
     print("  2) Run KODA on emails written from a certain person")
     print("  3) Run KODA on emails written to a certain person")
     print("  4) Run KODA on emails sent between two people")
-    print("  5) Run KODA on emails during a specific month")
+    print("  5) Run KODA on emails sent on a specific day")
     print("")
 
     choice = -1
