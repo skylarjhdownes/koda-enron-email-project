@@ -130,6 +130,20 @@ def dateSearch(path, outfile):
 
 
 #####################################################################
+# Tests loop through files for Maildir  (otherwise same format for getting info from emails)
+def mailDirTest(path, outfile):
+    for dirname, subdirs, files in os.walk(path):
+        print dirname
+        print '\tDirectories:', subdirs
+        for name in files:
+            fullname = os.path.join(dirname, name)
+            print
+            print '***', fullname
+            #print open(fullname).read()
+            print '*' * 20
+
+
+#####################################################################
 # Prompts user to do another search or cease
 #   return: 1 if yes, 0 if no, -1 if something broke 
 def continueLoop():
